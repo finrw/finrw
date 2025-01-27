@@ -39,7 +39,7 @@
             
              <h1 class="mb2"><p>Laporan Keuangan</p>KAS RW016 <p class="bold">Gate 1</p></h1>
             
-     <a href="https://sites.google.com/view/laporankeuanganrw016gf4/home" class="link"> 
+     <a href="https://finrw.github.io/Laporankasrw016griyafamily4/" class="link"> 
  <span><img class="illustration--small mb1" 
 src="https://lh3.googleusercontent.com/d/1FLVyqWS9A_wuFqm3O5FA71rZfODr2bZC" alt=""></span></a>
             <p class="bold">Perumahan Griya Family 4</p>
