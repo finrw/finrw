@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            background-color: #030712;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .payment-error-card {
+            font-family: 'Fira Code', Consolas, monospace;
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: 14px;
+            border: 1px solid #334155;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.1);
+            max-width: 620px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .error-header {
+            background: #1e293b;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .error-badge-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .error-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #f59e0b;
+        }
+
+        .warning-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #f59e0b;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+        }
+
+        .error-code {
+            font-size: 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            color: #fbbf24;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .error-title {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .code-preview-container {
+            display: flex;
+            padding: 18px 0;
+            background: #090d16;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .line-numbers {
+            display: flex;
+            flex-direction: column;
+            padding: 0 16px;
+            text-align: right;
+            color: #475569;
+            user-select: none;
+            border-right: 1px solid #1e293b;
+        }
+
+        .highlight-line-num {
+            color: #f59e0b;
+            font-weight: bold;
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+
+        .code-content {
+            margin: 0;
+            padding: 0 18px;
+            flex-grow: 1;
+        }
+
+        .payment-error-highlight {
+            background-color: rgba(245, 158, 11, 0.15);
+            border-left: 3px solid #f59e0b;
+            display: inline-block;
+            padding-left: 6px;
+            margin-left: -9px;
+            width: 100%;
+        }
+
+        /* JSON Syntax Highlighting */
+        .json-key { color: #93c5fd; }
+        .json-string { color: #86efac; }
+        .json-number { color: #fca5a5; }
+        .json-boolean { color: #c084fc; }
+        .json-punct { color: #94a3b8; }
+
+        .error-footer {
+            background: #111827;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #1f2937;
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .footer-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-icon {
+            color: #60a5fa;
+            flex-shrink: 0;
+        }
+
+        .pay-btn {
+            background-color: #f59e0b;
+            color: #0f172a;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .pay-btn:hover {
+            background-color: #fbbf24;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Overlay Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            color: #f8fafc;
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #f8fafc;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #f59e0b;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #1e293b;
+        }
+
+        .btn-submit {
+            background: #f59e0b;
+            border: none;
+            color: #0f172a;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+
+  <!-- Main API Error Card -->
+  <div class="payment-error-card">
+    <div class="error-header">
+      <div class="error-badge-row">
+        <div class="error-badge">
+          <span class="warning-dot"></span>
+          <span>HTTP 402: Payment Required</span>
+        </div>
+        <span class="error-code">ERR_SUBSCRIPTION_INACTIVE</span>
+      </div>
+      <span class="error-title">Your subscription plan has expired. Please complete the payment to continue accessing API endpoints.</span>
+    </div>
+    
+    <div class="code-preview-container">
+      <div class="line-numbers">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span class="highlight-line-num">4</span>
+        <span>5</span>
+      </div>
+      <pre class="code-content"><code><span class="json-punct">{</span>
+    <span class="json-key">"status"</span><span class="json-punct">:</span> <span class="json-string">"failed"</span><span class="json-punct">,</span>
+    <span class="json-key">"error_code"</span><span class="json-punct">:</span> <span class="json-string">"PAYMENT_REQUIRED"</span><span class="json-punct">,</span>
+    <span class="json-key">"balance_due"</span><span class="json-punct">:</span> <span class="json-number">29.00</span><span class="json-punct">,</span>
+    <span class="payment-error-highlight"><span class="json-key">"requires_action"</span><span class="json-punct">:</span> <span class="json-boolean">true</span><span class="json-punct">,</span></span>
+  <span class="json-punct">}</span></code></pre>
+    </div>
+
+    <div class="error-footer">
+      <div class="footer-message">
+        <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Action required: Billing portal redirection pending.</span>
+      </div>
+      <button class="pay-btn" id="openModalBtn">Pay Now</button>
+    </div>
+  </div>
+
+  <!-- Interactive Checkout Modal Overlay -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">Complete Subscription Payment</span>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="paymentForm" onsubmit="handlePayment(event)">
+        <div class="form-group">
+          <label>Cardholder Name</label>
+          <input type="text" class="form-input" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" class="form-input" placeholder="4242 •••• •••• 4242" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label>Expiry Date</label>
+            <input type="text" class="form-input" placeholder="MM/YY" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>CVC / CVV</label>
+            <input type="password" class="form-input" placeholder="123" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn-submit">Pay $29.00</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('checkoutModal');
+    const openBtn = document.getElementById('openModalBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+
+    function toggleModal() {
+      modal.classList.toggle('active');
+    }
+
+    openBtn.addEventListener('click', toggleModal);
+    closeBtn.addEventListener('click', toggleModal);
+    cancelBtn.addEventListener('click', toggleModal);
+
+    // Close modal when clicking outside of the modal card
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        toggleModal();
+      }
+    });
+
+    function handlePayment(e) {
+      e.preventDefault();
+      const submitBtn = document.querySelector('.btn-submit');
+      submitBtn.textContent = 'Processing...';
+      submitBtn.disabled = true;
+
+      setTimeout(() => {
+        alert('Payment successful! Subscription status updated.');
+        toggleModal();
+        submitBtn.textContent = 'Pay $29.00';
+        submitBtn.disabled = false;
+        document.getElementById('paymentForm').reset();
+      }, 1500);
+    }
+  </script>
+
+</body>
+</html>
